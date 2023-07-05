@@ -38,7 +38,11 @@ exports.singleJob = async (req, res, next) => {
 //update job by id.
 exports.updateJob = async (req, res, next) => {
   try {
-    const job = await Job.findByIdAndUpdate(req.params.job_id, req.body, { new: true }).populate('jobType', 'jobTypeName').populate('user', 'firstName lastName');
+    const job = await Job
+      .findByIdAndUpdate(req.params.job_id, req.body, { new: true })
+      .populate('jobType', 'jobTypeName')
+      .populate('user', 'firstName lastName');
+
     res.status(200).json({
       success: true,
       job
@@ -50,7 +54,6 @@ exports.updateJob = async (req, res, next) => {
 
 //update job by id.
 exports.showJobs = async (req, res, next) => {
-
   //enable search 
   const keyword = req.query.keyword ? {
     title: {
@@ -86,7 +89,12 @@ exports.showJobs = async (req, res, next) => {
   const count = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).countDocuments();
 
   try {
-    const jobs = await Job.find({ ...keyword, jobType: categ, location: locationFilter }).sort({ createdAt: -1 }).populate('jobType', 'jobTypeName').populate('user', 'firstName').skip(pageSize * (page - 1)).limit(pageSize)
+    const jobs = await Job
+      .find({ ...keyword, jobType: categ, location: locationFilter })
+      .sort({ createdAt: -1 }).populate('jobType', 'jobTypeName')
+      .populate('user', 'firstName')
+      .skip(pageSize * (page - 1))
+      .limit(pageSize)
     res.status(200).json({
       success: true,
       jobs,

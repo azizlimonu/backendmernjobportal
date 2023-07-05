@@ -5,19 +5,19 @@ const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
 //job type routes /api/jobtype/...
 
-router.post('/type/create', isAuthenticated, isAdmin, createJobType);
+router.post('/create', isAuthenticated, isAdmin, createJobType);
 
-router.get('/type/jobs', allJobsType);
+router.get('/alljobtype', allJobsType);
 
 router.put(
-  '/type/update/:type_id',
+  '/update/:type_id',
   isAuthenticated,
   isAdmin,
   updateJobType
 );
 
 router.delete(
-  '/type/delete/:type_id',
+  '/delete/:type_id',
   isAuthenticated,
   isAdmin,
   deleteJobType
