@@ -1,6 +1,6 @@
-const createErrorResponse = (message, codeStatus) => ({
-  message,
-  codeStatus
-});
+function ErrorResponse(message, codeStatus) {
+  this.message = message;
+  this.codeStatus = codeStatus;
+}
 
-module.exports = createErrorResponse;
+module.exports = ErrorResponse;

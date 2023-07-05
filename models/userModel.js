@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema;
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const jobsHistorySchema = new mongoose.Schema({
@@ -9,7 +9,6 @@ const jobsHistorySchema = new mongoose.Schema({
     trim: true,
     maxlength: 70,
   },
-
   description: {
     type: String,
     trim: true
@@ -34,9 +33,11 @@ const jobsHistorySchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-}, { timestamps: true });
+
+}, { timestamps: true })
 
 const userSchema = new mongoose.Schema({
+
   firstName: {
     type: String,
     trim: true,
@@ -72,33 +73,27 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0
   }
-}, { timestamps: true });
 
-// encrypt password this can also do in controller
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+}, { timestamps: true })
+
+//encrypting password before saving
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     next();
   }
-  this.password = await bcrypt.hash(this.password, 10);
-});
+  this.password = await bcrypt.hash(this.password, 10)
+})
 
-// Compare hash password
+// compare user password
 userSchema.methods.comparePassword = async function (enteredPassword) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
-
-// return JWT Token
-userSchema.methods.getJwtToken = function () {
-  return jwt.sign(
-    {
-      id: this.id
-    },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: 3600
-    }
-  );
+  return await bcrypt.compare(enteredPassword, this.password)
 }
 
+// return a JWT token
+userSchema.methods.getJwtToken = function () {
+  return jwt.sign({ id: this.id }, process.env.JWT_SECRET, {
+    expiresIn: 3600
+  });
+}
 
 module.exports = mongoose.model("User", userSchema);
