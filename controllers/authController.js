@@ -4,7 +4,7 @@ const ErrorResponse = require('../utils/errorResponse');
 
 exports.signup = async (req, res, next) => {
   const { email } = req.body;
-  const userExist = await User.findOne({ email });
+  const userExist = await User.findOne({ email }).select('-password');
   if (userExist) {
     return next(new ErrorResponse("E-mail already registred", 400));
   }

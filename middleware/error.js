@@ -5,10 +5,10 @@ const errorHandler = (err, req, res, next) => {
     let error = { ...err };
     error.message = err.message;
 
-    if (err.name === "CastError") {
-        const message = `Ressource not found ${err.value}`;
-        error = new ErrorResponse(message, 404);
-    }
+    // if (err.name === "CastError") {
+    //     const message = `Ressource not found ${err.value}`;
+    //     error = new ErrorResponse(message, 404);
+    // }
 
     //Mongoose duplicate value
     if (err.code === 11000) {
@@ -24,7 +24,7 @@ const errorHandler = (err, req, res, next) => {
 
     res.status(error.codeStatus || 500).json({
         success: false,
-        error: error.message || "server error"
+        error: error || "server error"
     })
 
 }
