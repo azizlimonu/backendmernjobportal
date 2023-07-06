@@ -54,29 +54,29 @@ exports.updateJob = async (req, res, next) => {
 
 exports.showJobs = async (req, res, next) => {
   try {
-    const { keyword, cat, location, pageNumber } = req.query;
+    const keyword = req.query.keyword ? {
+      title: {
+        $regex: req.query.keyword,
+        $options: 'i'
+      }
+    } : {};
 
-    // Prepare the filter conditions
-    const filter = {};
-    if (keyword) {
-      filter.title = { $regex: keyword, $options: 'i' };
-    }
-    if (cat) {
-      filter.jobType = cat;
-    }
-    if (location) {
-      filter.location = location;
-    }
+    const jobTypeCategory = await JobType.find({}, { _id: 1 });
+    const cat = req.query.cat || jobTypeCategory.map(cat => cat._id);
 
-    // Enable pagination
+    const jobByLocation = await Job.find({}, { location: 1 });
+    const setUniqueLocation = [...new Set(jobByLocation.map(val => val.location))];
+    const location = req.query.location || setUniqueLocation;
+
     const pageSize = 5;
-    const page = parseInt(pageNumber, 10) || 1;
+    const page = Number(req.query.pageNumber) || 1;
 
-    // Get the total count of matching documents
-    const count = await Job.countDocuments(filter);
+    const count = await Job
+      .find({ ...keyword, jobType: cat, location })
+      .countDocuments();
 
-    // Fetch the jobs with pagination and filtering
-    const jobs = await Job.find(filter)
+    const jobs = await Job
+      .find({ ...keyword, jobType: cat, location })
       .sort({ createdAt: -1 })
       .populate('jobType', 'jobTypeName')
       .populate('user', 'firstName')
@@ -89,11 +89,13 @@ exports.showJobs = async (req, res, next) => {
       page,
       pages: Math.ceil(count / pageSize),
       count,
+      setUniqueLocation
     });
   } catch (error) {
     next(error);
   }
 };
+
 
 
 
