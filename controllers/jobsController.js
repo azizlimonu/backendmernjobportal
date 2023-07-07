@@ -1,5 +1,6 @@
 const Job = require('../models/jobModel');
 const JobType = require('../models/jobTypeModel');
+const User = require('../models/userModel');
 const ErrorResponse = require('../utils/errorResponse');
 
 //create job
@@ -11,7 +12,7 @@ exports.createJob = async (req, res, next) => {
       salary: req.body.salary,
       location: req.body.location,
       jobType: req.body.jobType,
-      user: req.user.id
+      createdBy: req.user._id
     });
     res.status(201).json({
       success: true,
@@ -28,7 +29,7 @@ exports.singleJob = async (req, res, next) => {
     const job = await Job
       .findById(req.params.id)
       .populate('jobType', 'jobTypeName');
-      
+
     res.status(200).json({
       success: true,
       job
@@ -44,7 +45,7 @@ exports.updateJob = async (req, res, next) => {
     const job = await Job
       .findByIdAndUpdate(req.params.job_id, req.body, { new: true })
       .populate('jobType', 'jobTypeName')
-      .populate('user', 'firstName lastName');
+      .populate('createdBy', 'firstName lastName');
 
     res.status(200).json({
       success: true,
@@ -101,7 +102,7 @@ exports.showJobs = async (req, res, next) => {
 
 exports.deleteJob = async (req, res, next) => {
   try {
-    const jobdelete = await Job.findByIdAndRemove(req.params.id);
+    await Job.findByIdAndRemove(req.params.id);
     res.status(200).json({
       success: true,
       message: "Job deleted"
@@ -109,7 +110,69 @@ exports.deleteJob = async (req, res, next) => {
   } catch (error) {
     next(new ErrorResponse("server error", 500));
   }
-}
+};
+
+exports.findApplicant = async (req, res, next) => {
+  try {
+    const { jobId } = req.params;
+    console.log("JOB ID: ", jobId);
+
+    const applicants = await User
+      .find({ "jobsHistory.job": jobId }, { password: 0 });
+
+    res.status(200).json({
+      success: true,
+      applicants
+    });
+  } catch (error) {
+    next(new ErrorResponse("Server error while running findApplicant", 500));
+  }
+};
+
+exports.updateApplicationStatus = async (req, res, next) => {
+  try {
+    const { userId, applicationId, applicationStatus } = req.body;
+
+    // Find and update the job application status
+    const updatedUser = await User.findOneAndUpdate(
+      {
+        _id: userId,
+        'jobsHistory._id': applicationId
+      },
+      {
+        $set: {
+          'jobsHistory.$.applicationStatus': applicationStatus
+        }
+      },
+      {
+        new: true
+      }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User or job application not found'
+      });
+    }
+
+    // Access the updated job application
+    const updatedJobApplication = updatedUser.jobsHistory.find(
+      app => app._id.toString() === applicationId
+    );
+
+    res.status(200).json({
+      success: true,
+      message: `Application status updated to "${updatedJobApplication.applicationStatus}"`
+    });
+  } catch (error) {
+    console.log(error);
+    next(new ErrorResponse('Server error while updating application status', 500));
+  }
+};
+
+
+
 
 
 

@@ -17,6 +17,7 @@ const errorHandler = require("./middleware/error");
 
 //database connection
 const PORT = process.env.PORT || 5500;
+mongoose.set('useFindAndModify', false);
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

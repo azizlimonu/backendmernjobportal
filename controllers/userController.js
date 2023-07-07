@@ -83,7 +83,6 @@ exports.createUserJobsHistory = async (req, res, next) => {
       const addJobHistory = {
         job: jobId,
         user: req.user._id,
-        applicationStatus: 'applied'
       };
       currentUser.jobsHistory.push(addJobHistory);
       await currentUser.save();
