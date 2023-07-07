@@ -99,7 +99,17 @@ exports.showJobs = async (req, res, next) => {
   }
 };
 
-
+exports.deleteJob = async (req, res, next) => {
+  try {
+    const jobdelete = await Job.findByIdAndRemove(req.params.id);
+    res.status(200).json({
+      success: true,
+      message: "Job deleted"
+    })
+  } catch (error) {
+    next(new ErrorResponse("server error", 500));
+  }
+}
 
 
 

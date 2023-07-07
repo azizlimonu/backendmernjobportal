@@ -4,9 +4,8 @@ const { allUsers, singleUser, editUser, deleteUser, createUserJobsHistory } = re
 const { isAuthenticated, isAdmin } = require('../middleware/auth');
 
 //user routes /api/user/...
-
 router.get('/allusers', isAuthenticated, isAdmin, allUsers);
-router.get('/:id', isAuthenticated, singleUser);
+router.post('/jobhistory', isAuthenticated, createUserJobsHistory);
 router.put('/edit/:id', isAuthenticated, editUser);
 router.delete(
   '/admin/user/delete/:id',
@@ -14,6 +13,6 @@ router.delete(
   isAdmin,
   deleteUser
 );
-router.post('/jobhistory', isAuthenticated, createUserJobsHistory);
+router.get('/:id', isAuthenticated, singleUser);
 
 module.exports = router;
