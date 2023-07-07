@@ -9,7 +9,6 @@ const jobSchema = new mongoose.Schema({
     required: [true, 'Title is required'],
     maxlength: 70,
   },
-
   description: {
     type: String,
     trim: true,
@@ -32,7 +31,7 @@ const jobSchema = new mongoose.Schema({
     ref: "JobType",
     required: true
   },
-  user: {
+  createdBy: {
     type: ObjectId,
     ref: "User",
     required: true

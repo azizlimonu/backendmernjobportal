@@ -61,12 +61,27 @@ exports.logout = (req, res, next) => {
 
 // user profile
 exports.userProfile = async (req, res, next) => {
-  const user = await User.findById(req.user.id).select('-password');
-  res.status(200).json({
-    success: true,
-    user
-  })
-}
+  try {
+    const user = await User.findById(req.user.id)
+      .select('-password')
+      .populate({
+        path: 'jobsHistory.job',
+        select: '-password',
+        populate: {
+          path: 'jobType',
+          select: 'jobTypeName'
+        }
+      });
+    res.status(200).json({
+      success: true,
+      user
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 
 
 

@@ -4,33 +4,22 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const jobsHistorySchema = new mongoose.Schema({
-  title: {
-    type: String,
-    trim: true,
-    maxlength: 70,
-  },
-  description: {
-    type: String,
-    trim: true
-  },
-  salary: {
-    type: String,
-    trim: true,
-  },
-  location: {
-    type: String,
-  },
   interviewDate: {
     type: Date,
   },
   applicationStatus: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected'],
-    default: 'pending'
+    enum: ['applied', 'screening', 'interview','accepted','rejected'],
+    default: 'applied'
   },
   user: {
     type: ObjectId,
     ref: "User",
+    required: true
+  },
+  job: {
+    type: ObjectId,
+    ref: "Job",
     required: true
   },
 
