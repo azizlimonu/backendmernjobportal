@@ -115,7 +115,6 @@ exports.deleteJob = async (req, res, next) => {
 exports.findApplicant = async (req, res, next) => {
   try {
     const { jobId } = req.params;
-    console.log("JOB ID: ", jobId);
 
     const applicants = await User
       .find({ "jobsHistory.job": jobId }, { password: 0 });
